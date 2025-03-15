@@ -7,9 +7,9 @@ Complex::Complex(double Re, double Im) : Re(Re), Im(Im) {}
 Complex::operator double() const{ return sqrt(Re*Re + Im*Im); }
 
 Complex::operator std::string() const{
-    std::string str = std::to_string(Re);
-    str += (Im < 0 ? "" : "+") + std::to_string(Im) + "i";
-    return str;
+    std::ostringstream os;
+    os << Re << (Im < 0 ? "" : "+") << Im << "i";
+    return os.str();
 }
 
 Complex Complex::operator+(const Complex& other) const{ return{Re+other.Re, Im+other.Im}; }

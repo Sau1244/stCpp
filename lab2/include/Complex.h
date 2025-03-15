@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <sstream>
 #include <functional>
 
 class Complex{
