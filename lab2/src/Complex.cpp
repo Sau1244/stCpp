@@ -21,11 +21,9 @@ Complex Complex::operator*(const Complex& other) const{
 }
 
 Complex Complex::operator/(const Complex& other) const{
-    double denominator = other.Re*other.Re + other.Im*other.Im;
-    double numeratorRe = Re*other.Re + Im*other.Im;
-    double numeratorIm = Im*other.Re - Re*other.Im;
+    double denominator = 1.0/(other.Re*other.Re + other.Im*other.Im);
 
-    return {numeratorRe/denominator, numeratorIm/denominator};
+    return {(Re*other.Re+Im*other.Im)*denominator, (Im*other.Re-Re*other.Im)*denominator};
 }
 
 double Complex::operator()(const std::function<double(const Complex&)>& f) const{
@@ -33,6 +31,6 @@ double Complex::operator()(const std::function<double(const Complex&)>& f) const
 }
 
 std::ostream& operator<<(std::ostream& os, const Complex& k){
-    os << k.Re << (k.Im < 0 ? "" : "+") << k.Im << "i";
+    os << std::string(k);
     return os;
 }
