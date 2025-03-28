@@ -16,7 +16,8 @@ set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 
 set(INCLUDES ${PROJECT_SOURCE_DIR}/include)
 file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
-add_executable(${PROJECT_NAME} Main.cpp ${SOURCES})
+add_executable(${PROJECT_NAME} Main.cpp ${SOURCES}
+        "../projekt 1/Main.cpp")
 
 # Flaga do testowania błędu kompilacji
 option(ENABLE_ERROR_TEST "Włącz test błędu kompilacji" OFF)
