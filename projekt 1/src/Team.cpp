@@ -9,7 +9,6 @@ Team::~Team(){
         delete m_head;
         m_head = current;
     }
-    delete current;
 }
 
 TeamNode::TeamNode(const Team &team) : team(team), next(nullptr), prev(nullptr){}
@@ -30,8 +29,11 @@ void Team::removePokemon(const std::string& name) {
     while(current && current->pokemon.getName() != name){
         current = current->next;
     }
-    if(current->pokemon.getName() == name) {
-        current->prev->next = current->next;
+    if(current) {
+        if(current == m_head) m_head = current->next;
+        if(current == m_tail) m_tail = current->prev;
+        if(current->prev) current->prev->next = current->next;
+        if(current->next) current->next->prev = current->prev;
         delete current;
     }else{
         std::cout << "Nie znaleziono takiego pokemona!\n";
@@ -45,8 +47,7 @@ Pokemon& Team::operator[](int index){
         current = current->next;
         i++;
     }
-    if(i == index)
-        return current->pokemon;
+    return current->pokemon;
 }
 
 void Team::printPokemonsForward() const {

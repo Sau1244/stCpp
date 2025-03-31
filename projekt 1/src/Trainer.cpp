@@ -9,7 +9,6 @@ Trainer::~Trainer(){
         delete m_head;
         m_head = current;
     }
-    delete current;
 }
 
 void Trainer::addTeam(Team &team) {
