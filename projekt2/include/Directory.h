@@ -35,6 +35,11 @@ public:
 
     // metoda kopiująca katalog
     std::unique_ptr<FSItem> copy() const override;
+
+    /* opcjonalne */
+
+    // metoda tworząca realny katalog
+    void create(const std::string& path) const override;
 };
 
 #endif

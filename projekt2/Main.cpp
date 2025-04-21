@@ -5,11 +5,40 @@
 /* metody pomocnicze */
 std::unique_ptr<Directory> makeDir(const std::string& name);
 std::unique_ptr<File> makeFile(const std::string& name);
+void makeProject(std::unique_ptr<Directory>& project);
+
+
 
 int main(){
 
+    /* obowiązkowe */
     // tworzenie głównego katalogu
     std::unique_ptr<Directory> project = makeDir("project");
+
+    // tworzenie drzewa elementów
+    makeProject(project);
+
+    // wyświetlanie drzewa elementów
+    project->print(std::cout, 0, project->getName());
+
+    /* opcjonalne */
+    // tworzy rzeczywiste elementy poza katalogiem 'build'
+    project->create("..");
+
+    return 0;
+}
+
+
+
+std::unique_ptr<Directory> makeDir(const std::string& name){
+    return std::make_unique<Directory> (name);
+}
+
+std::unique_ptr<File> makeFile(const std::string& name){
+    return std::make_unique<File> (name);
+}
+
+void makeProject(std::unique_ptr<Directory>& project){
     // dodawanie pliku do głównego katalogu
     project->addItem(makeFile("README.md"));
 
@@ -31,16 +60,4 @@ int main(){
     assets->addItem(std::move(images));
     // dodanie assets jako podkatalog głównego katalogu
     project->addItem(std::move(assets));
-
-    project->print(std::cout, 0, project->getName());
-
-    return 0;
-}
-
-std::unique_ptr<Directory> makeDir(const std::string& name){
-    return std::make_unique<Directory> (name);
-}
-
-std::unique_ptr<File> makeFile(const std::string& name){
-    return std::make_unique<File> (name);
 }

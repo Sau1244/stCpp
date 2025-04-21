@@ -20,6 +20,11 @@ public:
 
     // metoda kopiująca plik
     std::unique_ptr<FSItem> copy() const override;
+
+    /* opcjonalne */
+
+    // metoda tworząca realny plik
+    void create(const std::string& path) const override;
 };
 
 #endif

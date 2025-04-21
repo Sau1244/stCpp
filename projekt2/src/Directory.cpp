@@ -53,3 +53,14 @@ void Directory::print(std::ostream& os, int indent, const std::string& relativeP
 std::unique_ptr<FSItem> Directory::copy() const{
     return std::make_unique<Directory>(*this);
 }
+
+void Directory::create(const std::string& path) const{
+    // tworzenie katalogu
+    std::string currentPath = path + '/' + getName();
+    std::filesystem::create_directories(currentPath);
+
+    // tworzenie elementów wewnątrz tego katalogu
+    for(const auto& item : items){
+        item->create(currentPath);
+    }
+}

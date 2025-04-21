@@ -7,6 +7,9 @@
 #include <string>
 #include <memory>
 
+#include <fstream>
+#include <filesystem>
+
 class FSItem{
 public:
     // destruktor wirtualny
@@ -20,6 +23,11 @@ public:
 
     // abstrakcyjna siatka kopiująca element
     virtual std::unique_ptr<FSItem> copy() const = 0;
+
+    /* opcjonalne */
+
+    // abstrakcyjna siatka tworząca realny element
+    virtual void create(const std::string& path) const = 0;
 };
 
 
