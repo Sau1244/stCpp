@@ -2,7 +2,7 @@
 
 Directory::Directory(const std::string& name) : name(name) {}
 
-Directory::~Directory() { std::cout << "Directory deleted " << getName() << "\n"; }
+Directory::~Directory() { std::cout << "Directory deleted " << name << "\n"; }
 
 Directory::Directory(const Directory& other){
     for(const auto& item : other.items)
@@ -39,11 +39,11 @@ std::string Directory::getName() const{ return name; }
 void Directory::print(std::ostream& os, int indent, const std::string& relativePath) const{
     // tworzenie ścieżki do katalogu
     std::string path;
-    if(relativePath == getName()) path = getName();
-    else path = relativePath + '/' + getName();
+    if(relativePath == name) path = name;
+    else path = relativePath + '/' + name;
 
     // wyświetlanie nazwy oraz ścieżki do katalogu
-    os << std::string(indent, ' ') << "Dir: " << getName() << " [path: " << path << "]\n";
+    os << std::string(indent, ' ') << "Dir: " << name << " [path: " << path << "]\n";
 
     // wyświetlanie zawartości katalogu
     for(const auto& item : items)
@@ -56,7 +56,7 @@ std::unique_ptr<FSItem> Directory::copy() const{
 
 void Directory::create(const std::string& path) const{
     // tworzenie katalogu
-    std::string currentPath = path + '/' + getName();
+    std::string currentPath = path + '/' + name;
     std::filesystem::create_directories(currentPath);
 
     // tworzenie elementów wewnątrz tego katalogu
