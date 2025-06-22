@@ -54,7 +54,7 @@ public:
      */
     BetterVector(BetterVector&& other) noexcept
         : data(other.data), actualSize(other.actualSize), maxSize(other.maxSize){
-        clear(other);
+        clearH(other);
     }
 
     /**
@@ -68,19 +68,92 @@ public:
             data = other.data;
             maxSize = other.maxSize;
             actualSize = other.actualSize;
-            clear(other);
+            clearH(other);
         }
         return *this;
     }
 
     /**
-     * @brief Czyści dane obiektu, ustawia `data` na nullptr - przydatne dla konstruktora/operatora przenoszącego
+     * @brief Czyści całkowicie dane obiektu, ustawia `data` na nullptr - przydatne dla konstruktora/operatora przenoszącego
      * @param obj Czyszczony obiekt
      */
-    void clear(BetterVector& obj){
+    void clearH(BetterVector& obj){
         obj.data = nullptr;
         obj.actualSize = 0;
         obj.maxSize = 0;
+    }
+
+    /**
+     * @brief Usuwa wszystkie elementy z wektora
+     */
+    void clear(){
+        actualSize = 0;
+    }
+
+    /**
+     * @brief Zwiększa pojemność wektora do co najmniej wartości new_capacity, jeżeli aktualnie pojemność jest mniejsza
+     * @param newCapacity Nowa alokowana wielkość
+     */
+    void reserve(size_t newCapacity){
+        if(maxSize < newCapacity){
+            maxSize = newCapacity;
+            reallocMemory();
+        }
+    }
+
+    /**
+     * @brief Umożliwia stworzenie nowego elementu bezpośrednio na końcu wektora, konstruowane bezpośrednio w pamięci
+     * @tparam Args ... Typ elementów przyjmujący jego dowolną ilość
+     * @param args Tworzony element
+     */
+    template<typename... Args>
+    void emplace_back(Args&&... args){
+        push_back(T(std::forward<Args>(args)...));
+    }
+
+    /**
+     * @brief Dodaje każdą odpowiednią wartość wektora do drugiego wektora, gdy są tej samej wielkości
+     * @param other Drugi wektor
+     * @return Stworzony wektor - suma wartości
+     */
+    BetterVector operator+(const BetterVector& other){
+        BetterVector<T> v;
+        if(other.actualSize == actualSize){
+            for(size_t i = 0; i < actualSize; i++)
+                v.push_back(data[i] + other.data[i]);
+        }
+
+        return v;
+    }
+
+    /**
+     * @brief Odejmuje każdą odpowiednią wartość wektora od drugiego wektora, gdy są tej samej wielkości
+     * @param other Drugi wektor
+     * @return Stworzony wektor - różnica wartości
+     */
+    BetterVector operator-(const BetterVector& other){
+        BetterVector<T> v;
+        if(other.actualSize == actualSize){
+            for(size_t i = 0; i < actualSize; i++)
+                v.push_back(data[i] - other.data[i]);
+        }
+
+        return v;
+    }
+
+    /**
+     * @brief Mnoży każda kolejną wartość wektora o skalar
+     * @tparam Scalar Typ skalaru
+     * @param scalar Skalar mnożący
+     * @return Stworzony wektor - iloczyn przez skalar
+     */
+    template<typename Scalar, typename = std::enable_if_t<std::is_arithmetic_v<Scalar>>>
+    BetterVector operator*(const Scalar& scalar){
+        BetterVector<decltype(std::declval<T>()*std::declval<Scalar>())> v;
+        for(size_t i = 0; i < actualSize; i++)
+            v.push_back(this->data[i]*scalar);
+
+        return v;
     }
 
     /**
@@ -106,7 +179,6 @@ public:
      * @brief Alokuje pamięć, gdy zwiększa się jej maksymalna wielkość. Nadpisuje dane.
      */
     void reallocMemory(){
-        doubleMaxSize();
         T *newBegin = new T[maxSize];
         if(data){
             copy(data, newBegin, actualSize);
@@ -120,8 +192,10 @@ public:
      * @param newElement Dodawany element
      */
     void push_back(const T& newElement) {
-        if(actualSize == maxSize)
+        if(actualSize == maxSize){
+            doubleMaxSize();
             reallocMemory();
+        }
         data[actualSize++] = newElement;
     }
 
@@ -160,26 +234,50 @@ public:
     bool empty() const{ return !actualSize; }
 
     /**
+     * @brief Pierwszy element kontenera
+     * @return Referencja do pierwszego elementu
+     */
+    T& front(){ return *data; }
+
+    /**
+     * @brief Ostatni element kontenera
+     * @return Referencja do ostatniego elementu
+     */
+    T& back(){ return *(data + actualSize - 1); }
+
+    /**
+     * @brief `const` pierwszego elementu kontenera
+     * @return Referencja `const` do pierwszego elementu
+     */
+    const T& front() const{ return *data; }
+
+    /**
+     * @brief `const` ostatniego elementu kontenera
+     * @return Referencja `const` do ostatniego elementu
+     */
+    const T& back() const{ return *(data + actualSize - 1); }
+
+    /**
      * @brief Iterator pierwszego elementu kontenera
-     * @return Wskaźnik do pierwszego elementu
+     * @return Referencja do pierwszego elementu
      */
     T* begin(){ return data; }
 
     /**
      * @brief Iterator ostatniego elementu kontenera
-     * @return Wskaźnik do ostatniego elementu
+     * @return Referencja do ostatniego elementu
      */
     T* end(){ return data + actualSize; }
 
     /**
      * @brief Iterator `const` pierwszego elementu kontenera
-     * @return Wskaźnik `const` do pierwszego elementu
+     * @return Referencja `const` do pierwszego elementu
      */
     const T* begin() const{ return data; }
 
     /**
-     * @brief Iterator `const` ostatniego elementu kontenera
-     * @return Wskaźnik `const` do ostatniego elementu
+     * @brief `const` ostatniego elementu kontenera
+     * @return Referencja `const` do ostatniego elementu
      */
-    const T* end() const{ return data + actualSize; }
+    const T* end() const{ return data + actualSize ; }
 };
